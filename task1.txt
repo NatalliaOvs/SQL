@@ -1,0 +1,281 @@
+БАЗА ДАННЫХ ИГРЫ В ШАХМАТЫ.
+1) Создать схему БД (название - ваша фамилия)
+
+2) Создать таблицы:
+- users с полями id, login, password и заполнить 15 записями.
+- profiles с полями id, first_name, last_name, email, age и заполнить 10 записями.
+- games с полями id, first_player_id, second_player_id и заполнить 10 записями, в полях first_player_id, second_player_id должны быть значения id из таблицы profiles, например первый играл с пятым, четвертый с десятым и тд.
+- game_results с полями id, result_value и заполнить тремя записями:
+WIN
+LOSE
+DRAW
+
+При проектировании таблиц учитывать типы данных, идентификаторы, ограничения и тд
+
+3) В таблице users удалите пользователей под номерами 2, 5, 7, 12, 15;
+
+4) В таблице profiles измените имя пятого игрока на 'Bob';
+
+
+
+БАЗА ДАННЫХ ИГРЫ В ШАХМАТЫ.
+
+1) Создать таблицы:
+- player_results с полями id, player_id, result_id, game_id заполнить её айдишниками игроков, айдиниками результатов по принципу, что у игрока могут быть победы/поражения/ничьи (подсказка - Первая нормальная форма ) и в поле game_id указать в какой именно игре он получил этот результат. *данные создавать логически с использованием таблицы games.
+- achievements с полями id, achiev_name
+заполнить её несколькими ачивками (5-6 шт, например, "newbie", "master"...и тд).
+- player_achievs с полями id, player_id, achiev_id
+заполнить её айдишниками игроков и айдиниками ачивок по принципу, что игроку может принадлежать от 1 до нескольких ачивок (подсказка - Первая нормальная форма ).
+
+2) В таблице users добавить новое поле «profiles_id» и заполнить его идентификаторами профилей, так чтобы в одной записи, id пользователя не был равен id профиля.
+
+3) НЕ создавая дополнительных полей, создать связи между всеми таблицами (FOREIGN KEY)
+users -> profiles
+games -> profiles
+player_achievs -> profiles
+player_achievs -> achievements
+player_results -> profiles
+player_results -> game_results
+player_results -> games.
+
+
+
+
+create database ovsyanik;
+
+use ovsyanik;
+create table USERS (
+id int auto_increment primary key,
+login varchar(10) not null,
+password varchar(10) not null
+); 
+
+insert into USERS values
+(null, 'Osa', '123OSA1'),
+(null, 'Nik', '456N78'),
+(null, 'Peter', '654PET5'),
+(null, 'Miki', '987My5'),
+(null, 'Cat', '321My321'),
+(null, 'Ivan', '1611Iv'),
+(null, 'Aleks', '6464AA54'),
+(null, 'Kate', '951Kat15'),
+(null, 'Serg', 'Ser357'),
+(null, 'Ola', '222OOO2'),
+(null, 'Inna', 'Iam654'),
+(null, 'Fil', 'kak987'),
+(null, 'Fly', 'olaola'),
+(null, 'Milka', 'mymy'),
+(null, 'Den', 'cry555');
+
+select *
+from USERS;
+
+use ovsyanik;
+create table PROFI (
+id int auto_increment primary key,
+first_name varchar(15) not null,
+last_name varchar(15) not null,
+email varchar(25) not null,
+age integer(2)
+);
+
+insert into PROFI values
+(null, 'Olga', 'Orlova', 'orlova@gmail.com', 35),
+(null, 'Ivan', 'Nikitin', 'niki@gmail.com', 27),
+(null, 'Peter', 'Smirnov', 'my1@gmail.com', 30),
+(null, 'Nikita', 'Ognev', 'fire@gmail.com', 32),
+(null, 'Iryna', 'Kalinouskaya', 'kalina@gmail.com', 28),
+(null, 'Pavel', 'Shkorov', 'pasha@gmail.com', 25),
+(null, 'Evgenii', 'Lelei', 'leleii@gmail.com', 29),
+(null, 'Inna', 'Volkova', 'wolf@gmail.com', 31),
+(null, 'Maria', 'Knaiz', 'koroleva@gmail.com', 24),
+(null, 'Oleg', 'Chilkevich', 'Chilia@gmail.com', 37);
+
+select *
+from PROFI;
+
+use ovsyanik;
+create table Games (
+id int auto_increment primary key,
+first_players_id int,
+second_players_id int
+);
+insert into Games values 
+(null, (select id from PROFI where id=1),(select id from PROFI where id=10)),
+(null, (select id from PROFI where id=2),(select id from PROFI where id=9)),
+(null, (select id from PROFI where id=3),(select id from PROFI where id=8)),
+(null, (select id from PROFI where id=4),(select id from PROFI where id=7)),
+(null, (select id from PROFI where id=5),(select id from PROFI where id=6)),
+(null, (select id from PROFI where id=6),(select id from PROFI where id=1)),
+(null, (select id from PROFI where id=7),(select id from PROFI where id=2)),
+(null, (select id from PROFI where id=8),(select id from PROFI where id=3)),
+(null, (select id from PROFI where id=9),(select id from PROFI where id=4)),
+(null, (select id from PROFI where id=10),(select id from PROFI where id=5));
+
+select*
+from Games;
+
+create table Game_results (
+id int auto_increment primary key,
+result_value varchar(10) not null
+);
+insert into Game_results values
+(null, 'WIN'),
+(null, 'LOSE'),
+(null, 'DRAW');
+
+select*
+from Game_results;
+
+
+delete 
+from USERS
+where id IN (2,5,7,12,15);
+
+select *
+from USERS;
+
+update PROFI
+set first_name='Bob' where id=5;
+
+select *
+from PROFI;
+
+create table Players_results(
+id int auto_increment primary key,
+player_id int,
+result_id int,
+game_id int
+);
+insert into Players_results values  
+(null, (select id from PROFI where id=1),(select id from Game_results where id=2), (select id from games where first_players_id=1)),
+(null, (select id from PROFI where id=1), (select id from Game_results where id=3), (select id from games where second_players_id=1)),
+(null, (select id from PROFI where id=2), (select id from Game_results where id=2), (select id from games where first_players_id=2)),
+(null, (select id from PROFI where id=2), (select id from Game_results where id=1), (select id from games where second_players_id=2)),
+(null, (select id from PROFI where id=3), (select id from Game_results where id=2), (select id from games where first_players_id=3)),
+(null, (select id from PROFI where id=3), (select id from Game_results where id=3), (select id from games where second_players_id=3)),
+(null, (select id from PROFI where id=4), (select id from Game_results where id=2), (select id from games where first_players_id=4)),
+(null, (select id from PROFI where id=4), (select id from Game_results where id=1), (select id from games where second_players_id=4)),
+(null, (select id from PROFI where id=5), (select id from Game_results where id=3), (select id from games where first_players_id=5)),
+(null, (select id from PROFI where id=5), (select id from Game_results where id=2), (select id from games where second_players_id=5)),
+(null, (select id from PROFI where id=6), (select id from Game_results where id=2), (select id from games where first_players_id=6)),
+(null, (select id from PROFI where id=6), (select id from Game_results where id=1), (select id from games where second_players_id=6)),
+(null, (select id from PROFI where id=7), (select id from Game_results where id=3), (select id from games where first_players_id=7)),
+(null, (select id from PROFI where id=7), (select id from Game_results where id=1), (select id from games where second_players_id=7)),
+(null, (select id from PROFI where id=8), (select id from Game_results where id=2), (select id from games where first_players_id=8)),
+(null, (select id from PROFI where id=8), (select id from Game_results where id=1), (select id from games where second_players_id=8)),
+(null, (select id from PROFI where id=9), (select id from Game_results where id=2), (select id from games where first_players_id=9)),
+(null, (select id from PROFI where id=9), (select id from Game_results where id=3), (select id from games where second_players_id=9)),
+(null, (select id from PROFI where id=10), (select id from Game_results where id=1), (select id from games where first_players_id=10)),
+(null, (select id from PROFI where id=10), (select id from Game_results where id=2), (select id from games where second_players_id=10));
+
+
+select*
+from Players_results;
+
+create table Achievements(
+id int auto_increment primary key,
+achiev_name varchar(10) not null
+);
+insert into Achievements values
+(null, 'newbie'),
+(null, 'master'),
+(null, 'guru'),
+(null, 'spec'),
+(null, 'general');
+
+select*
+from Achievements;
+
+create table Player_achievs(
+id int auto_increment primary key,
+player_id int,
+achiev_id int
+);
+
+insert into Player_achievs values
+(null, (select id from Profi where last_name='Orlova'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Orlova'), (select id from Achievements where achiev_name='spec')),
+(null, (select id from Profi where last_name='Orlova'), (select id from Achievements where achiev_name='general')),
+(null, (select id from Profi where last_name='Nikitin'), (select id from Achievements where achiev_name='newbie')),
+(null, (select id from Profi where last_name='Smirnov'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Smirnov'), (select id from Achievements where achiev_name='spec')),
+(null, (select id from Profi where last_name='Ognev'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Ognev'), (select id from Achievements where achiev_name='spec')),
+(null, (select id from Profi where last_name='Kalinouskaya'), (select id from Achievements where achiev_name='general')),
+(null, (select id from Profi where last_name='Kalinouskaya'), (select id from Achievements where achiev_name='newbie')),
+(null, (select id from Profi where last_name='Shkorov'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Lelei'), (select id from Achievements where achiev_name='spec')),
+(null, (select id from Profi where last_name='Lelei'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Volkova'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Knaiz'), (select id from Achievements where achiev_name='guru')),
+(null, (select id from Profi where last_name='Knaiz'), (select id from Achievements where achiev_name='general')),
+(null, (select id from Profi where last_name='Knaiz'), (select id from Achievements where achiev_name='general')),
+(null, (select id from Profi where last_name='Chilkevich'), (select id from Achievements where achiev_name='master')),
+(null, (select id from Profi where last_name='Chilkevich'), (select id from Achievements where achiev_name='general'));
+
+select*
+from Player_achievs;
+
+alter table USERS
+add column profiles_id int;
+
+update USERS
+set profiles_id = case
+	when id = 1 then 8
+    when id = 2 then 14
+    when id = 3 then 11
+    when id = 4 then 15
+    when id = 5 then 2
+    when id = 6 then 10
+    when id = 7 then 9
+    when id = 8 then 7
+    when id = 9 then 12
+    when id = 10 then 3
+    when id = 11 then 1
+    when id = 12 then 5
+    when id = 13 then 4
+    when id = 14 then 13
+    when id = 15 then 6
+          else profiles_id
+          end;
+          
+SET SQL_SAFE_UPDATES = 0;
+
+select*
+from Users;
+          
+ alter table Games
+ add constraint FK_Games_PROFI
+ foreign key (second_players_id)
+ references profi(id);
+ 
+ alter table Player_achievs
+ add constraint FK_Player_achievs_PROFI
+ foreign key (player_id)
+ references profi(id);
+ 
+ alter table Player_achievs
+ add constraint FK_Player_achievs_Achievements
+ foreign key (achiev_id)
+ references Achievements(id);
+ 
+ alter table Players_results
+ add constraint FK_Players_results_Profi
+ foreign key (player_id)
+ references profi(id);
+ 
+ alter table Players_results
+ add constraint FK_Players_results_Game_results
+ foreign key (player_id)
+ references result (id);
+ 
+ alter table Players_results
+ add constraint FK_Players_results_Games
+ foreign key (game_id)
+ references game (id);
+ 
+ alter table USERS
+ add constraint FK_USERS_PROFI
+ foreign key (profi_id)
+ references profi (id);
